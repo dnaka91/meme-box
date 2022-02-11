@@ -55,8 +55,13 @@
     "docs:json": "compodoc -p ./tsconfig.base.json -e json -d .",
     "storybook": "npm run docs:json && start-storybook -p 6006",
     "build-storybook": "npm run docs:json && build-storybook",
+    "package:windows": "npm run build:prepare && npm run build:windows && node scripts/move-binary.js",
+    "package:linux": "npm run build:prepare && npm run build:linux && node scripts/move-binary.js",
+    "package:macos": "npm run build:prepare && npm run build:macos && node scripts/move-binary.js",
     "tauri": "tauri",
-    "package": "npm run build:prepare && npm run build:all && node scripts/move-binary.js"
+    "tauri:build:windows": "npm run package:windows && tauri build",
+    "tauri:build:linux": "npm run package:linux && tauri build",
+    "tauri:build:macos": "npm run package:macos && tauri build"
   },
   "devDependencies": {
     "@angular-builders/custom-webpack": "11.0.0",
