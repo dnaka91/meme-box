@@ -1,6 +1,6 @@
 import {Compiler, Injectable, Injector, TemplateRef, Type} from '@angular/core';
 import {MatDialog} from "@angular/material/dialog";
-import {Action, Screen, TimedClip, TwitchTrigger} from "@memebox/contracts";
+import {Action, Screen, TimedAction, TwitchTrigger} from "@memebox/contracts";
 import {ComponentType} from "@angular/cdk/portal";
 import {MatDialogConfig} from "@angular/material/dialog/dialog-config";
 import {MatDialogRef} from "@angular/material/dialog/dialog-ref";
@@ -8,7 +8,13 @@ import type {ConfirmationsPayload} from "./simple-confirmation-dialog/simple-con
 import type {ScreenClipOptionsPayload} from "./screen-clip-options/screen-clip-options.component";
 import type {ClipAssigningDialogOptions} from "./clip-assigning-dialog/clip-assigning-dialog.component";
 import {MarkdownDialogPayload} from "../../../../server/constants";
-import {CustomHtmlDialogPayload, CustomScriptDialogPayload, DialogContract} from "./dialog.contract";
+import {
+  CustomHtmlDialogPayload,
+  CustomScriptDialogPayload,
+  DialogContract,
+  TwitchScopeSelectionPayload,
+  TwitchScopeSelectionResult
+} from "./dialog.contract";
 import {MediaEditDialogPayload} from "./media-edit/media-edit.component";
 
 @Injectable()
@@ -59,6 +65,13 @@ export class DialogService {
     );
   }
 
+  showGettingStarted(info: any) {
+    this.loadAndOpen(
+      import('./getting-started/getting-started-dialog.module'),
+      info
+    );
+  }
+
   async showWidgetEdit(payload: CustomHtmlDialogPayload) {
     const dialogRef = await this.loadAndOpen(
       import('./widget-edit/widget-edit.module'),
@@ -88,7 +101,7 @@ export class DialogService {
     return dialogRef.afterClosed().toPromise();
   }
 
-  showTimedEditDialog(info: Partial<TimedClip>) {
+  showTimedEditDialog(info: Partial<TimedAction>) {
     this.loadAndOpen(
       import('./timed-edit/timed-edit.module'),
       info
@@ -123,6 +136,15 @@ export class DialogService {
       import('./screen-arrange/screen-arrange.module'),
       info
     );
+  }
+
+  async openTwitchScopeSelection(scopePayload: TwitchScopeSelectionPayload): Promise<TwitchScopeSelectionResult> {
+    const dialogRef = await this.loadAndOpen(
+      import('./twitch-scope-selection/twitch-scope-selection-dialog.module'),
+      scopePayload
+    );
+
+    return await dialogRef.afterClosed().toPromise();
   }
 
   openTwitchConnectionConfig() {

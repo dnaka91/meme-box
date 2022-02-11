@@ -1,7 +1,6 @@
-import {TwitchEventTypes, TwitchTrigger, TwitchTriggerCommand} from "@memebox/contracts";
+import {AllTwitchEvents, TwitchEventTypes, TwitchTrigger, TwitchTriggerCommand} from "@memebox/contracts";
 import * as tmi from "tmi.js";
 import {CommonUserstate} from "tmi.js";
-import {AllTwitchEvents} from "./twitch.connector.types";
 
 declare module 'tmi.js' {
   export interface Badges {
@@ -141,7 +140,12 @@ function* returnAllCommandsByMessage (
 
     // TODO improve multiple twitch commands with the same start name
     // TODO maybe with an order and "stop handling after this" ???
-    if (toLoweredMessage.includes(twitchSetting.contains.toLowerCase())) {
+    const aliasesToCheck = [twitchSetting.contains, ...(twitchSetting.aliases ?? [])]
+      .map(a => a.toLowerCase());
+
+    const foundAnyCommandsInMessage = aliasesToCheck.some(alias => toLoweredMessage.includes(alias));
+
+    if (foundAnyCommandsInMessage) {
       if (!foundCommand) {
         foundCommand = twitchSetting;
       } else {

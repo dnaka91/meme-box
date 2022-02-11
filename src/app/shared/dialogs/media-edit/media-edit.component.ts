@@ -61,6 +61,7 @@ const INITIAL_CLIP: Partial<Action> = {
   type: ActionType.Picture,
   name: 'Media Filename',
   volumeSetting: 10,
+  gainSetting: 0,
   playLength: DEFAULT_PLAY_LENGTH,
   clipLength: DEFAULT_PLAY_LENGTH, // TODO once its possible to get the data from the clip itself
   metaDelay: META_DELAY_DEFAULT,
@@ -104,6 +105,7 @@ export class MediaEditComponent
     name: "",
     type: 0,
     volumeSetting: 0,
+    gainSetting: 0,
     clipLength: 0,
     playLength: [0, Validators.min(0)],
     path: "",
@@ -113,7 +115,8 @@ export class MediaEditComponent
     metaDelay: 0,
 
     fromTemplate: "",
-    queueName: ""
+    queueName: "",
+    description: ""
   });
 
   currentMediaType$ = new BehaviorSubject(INITIAL_CLIP.type);
@@ -162,10 +165,10 @@ export class MediaEditComponent
 
   currentScript: ScriptConfig = null;
 
-  // Get all clips that have the assigned tags
-  taggedClips$ = combineLatest([
+  // Get all actions that have the assigned tags
+  taggedActions$ = combineLatest([
     this.currentTags$,
-    this.appQuery.clipList$
+    this.appQuery.actionList$
   ]).pipe(
     map(([currentTags, allClips]) => {
       if (currentTags.length === 0) {
@@ -179,7 +182,7 @@ export class MediaEditComponent
   )
 
 
-  widgetTemplates$ = this.appQuery.clipList$.pipe(
+  widgetTemplates$ = this.appQuery.actionList$.pipe(
     map(( allMedias) => {
       return allMedias.filter(c => c.type === ActionType.WidgetTemplate);
     }),
@@ -347,7 +350,7 @@ separatorKeysCodes: number[] = [ENTER, COMMA];
 
     valueAsClip.showOnMobile = this.showOnMobile;
 
-    await this.appService.addOrUpdateClip(valueAsClip);
+    await this.appService.addOrUpdateAction(valueAsClip);
 
     if (this.selectedScreenId && valueAsClip.type !== ActionType.Meta) {
       this.appService.addOrUpdateScreenClip(this.selectedScreenId, {

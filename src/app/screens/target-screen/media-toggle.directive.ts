@@ -16,7 +16,7 @@ import {BehaviorSubject, Subject} from "rxjs";
 import {mergeCombinedClipWithOverrides, TargetScreenComponent} from "./target-screen.component";
 import {delay, skip, take, takeUntil, withLatestFrom} from "rxjs/operators";
 import {DynamicIframeComponent} from "../../shared/components/dynamic-iframe/dynamic-iframe.component";
-import {AppQueries, WebsocketService} from "@memebox/app-state";
+import {AppQueries, MemeboxWebsocketService} from "@memebox/app-state";
 import {actionDataToWidgetContent, DynamicIframeContent} from "@memebox/utils";
 
 export enum MediaState {
@@ -63,7 +63,7 @@ export class MediaToggleDirective implements OnChanges, OnInit, OnDestroy {
 
   constructor(private element: ElementRef<HTMLElement>,
               private parentComp: TargetScreenComponent,
-              private webSocket: WebsocketService,
+              private webSocket: MemeboxWebsocketService,
               private renderer: Renderer2,
               private appQueries: AppQueries) {
     this.appQueries.actionMap$.pipe(
@@ -393,6 +393,9 @@ export class MediaToggleDirective implements OnChanges, OnInit, OnDestroy {
       || control instanceof HTMLVideoElement) {
       control.currentTime = 0;
       console.info('Media Play triggered');
+
+      this.attachGain(control);
+
       control.play().then(() => {
         console.info('Media Play done');
       });
@@ -411,6 +414,33 @@ export class MediaToggleDirective implements OnChanges, OnInit, OnDestroy {
         this.stopIfStillPlaying();
       }, this.currentCombinedClip.clip.playLength)
     }
+  }
+
+  private attachedGainAlready: Dictionary<boolean> = {};
+
+  private attachGain(mediaElement: HTMLMediaElement) {
+    const media = this.currentCombinedClip.clip;
+    const gainSetting = media.gainSetting;
+
+    if (!gainSetting || this.attachedGainAlready[media.id]) {
+      return;
+    }
+
+    // create an audio context and hook up the video element as the source
+    const audioCtx = new AudioContext();
+    const source = audioCtx.createMediaElementSource(mediaElement);
+
+// create a gain node
+    const valueToGain = Math.fround(gainSetting / 100);
+
+    const gainNode = audioCtx.createGain();
+    gainNode.gain.value = valueToGain; // double the volume
+    source.connect(gainNode);
+
+// connect the gain node to an output destination
+    gainNode.connect(audioCtx.destination);
+
+    this.attachedGainAlready[media.id]  = true;
   }
 
   private stopMedia () {

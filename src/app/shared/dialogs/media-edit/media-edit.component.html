@@ -84,7 +84,7 @@
         </mat-form-field>
 
         <app-hint-panel style="margin-top: 0.5rem" [addBottomPadding]="true">
-          You can select a file from the media folder or you an online url.
+          You can select a file from the media folder or an online url.
         </app-hint-panel>
       </div>
 
@@ -126,6 +126,24 @@
             {{ volumeSlider.value }}
           </div>
         </div>
+
+        <mat-label>Volume Gain</mat-label>
+        <div class="slider__row">
+          <mat-slider #gainSlider
+                      [max]="300"
+                      [min]="0"
+                      [step]="1"
+                      formControlName="gainSetting"
+          >
+          </mat-slider>
+          <div class="volume__label">
+            {{ gainSlider.value }}
+          </div>
+        </div>
+
+        <app-hint-panel style="margin-top: 0.5rem" [addBottomPadding]="true">
+          The Gain is only applied in the Preview Screen / in OBS.
+        </app-hint-panel>
       </ng-container>
       <div class="form-field-row"  *ngIf="false">
         <mat-form-field>
@@ -230,13 +248,13 @@
            [class.custom-html-preview]="[MediaType.Widget, MediaType.WidgetTemplate].includes(form.value.type)"
            [class.script]="[MediaType.Script, MediaType.PermanentScript].includes(form.value.type)"
       >
-        <!-- Meta => AppClipType or list all assign clips by tags -->
+        <!-- Meta => AppClipType or list all assign actions by tags -->
         <div *ngSwitchCase="MediaType.Meta">
-          <h3>Assigned Clips by Tags</h3>
-          <app-compact-clip-card *ngFor="let assignedClip of taggedClips$ | async"
-                                 [clip]="assignedClip">
+          <h3>Assigned Actions by Tags</h3>
+          <app-compact-action-card *ngFor="let assignedClip of taggedActions$ | async"
+                                   [action]="assignedClip">
 
-          </app-compact-clip-card>
+          </app-compact-action-card>
         </div>
 
         <div *ngSwitchCase="MediaType.Widget" class="custom-html-holder">
@@ -350,6 +368,15 @@
       </div>
     </lib-step>
 
+    <lib-step label="Description">
+        <mat-form-field class="example-chip-list">
+          <mat-label>Description</mat-label>
+
+          <textarea matInput [rows]="12"
+                    formControlName="description"></textarea>
+        </mat-form-field>
+    </lib-step>
+
     <lib-step label="Other Settings">
 
       <mat-checkbox class="mobile-checkbox"
@@ -363,6 +390,7 @@
       </app-hint-panel>
 
       <div class="form-field-row" *ngIf="form.value.type !== MediaType.Meta">
+        <!-- extract both Tag Assignment Components -->
         <mat-form-field class="example-chip-list">
           <mat-label>Assign a new tag...</mat-label>
           <mat-chip-list #chipList aria-label="Tag selection">
@@ -391,6 +419,12 @@
           </mat-autocomplete>
         </mat-form-field>
 
+        <app-hint-panel style="margin-top: 1rem" [addBottomPadding]="true">
+          These tags are currently used for the Meta Action.
+          <br/>
+          <br/>
+          So that you can select which Actions should be "linked" to the Meta Action.
+        </app-hint-panel>
       </div>
 
       <div class="form-field-row" *ngIf="MEDIA_EDIT_CONFIG[form.value.type].canSelectQueue">
@@ -414,7 +448,7 @@
           <br/>
           <br/>
           If you don't select a queue, then visible Media (Images, Videos etc) will still have their own queue, <br />
-          which means only one Media can be visible at once at each assigned screen.
+          which means each Media can be visible only at once at each assigned screen.
         </app-hint-panel>
       </div>
 
@@ -436,7 +470,7 @@
 
 <mat-dialog-actions class="two-columns">
   <div class="column">
-
+    <app-open-feedback-button feedbackTarget="Action Edit Dialog"></app-open-feedback-button>
   </div>
   <div class="column" align="end" >
     <button mat-button mat-dialog-close>Cancel</button>

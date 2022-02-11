@@ -4,8 +4,8 @@ import {
   AppQueries,
   AppService,
   ConnectionState,
-  SettingsService,
-  WebsocketService
+  MemeboxWebsocketService,
+  SettingsService
 } from "@memebox/app-state";
 import {Observable, Subject} from "rxjs";
 import {Action, ACTION_TYPE_INFORMATION} from "@memebox/contracts";
@@ -40,7 +40,7 @@ const SettingMobileColumnSize = 'MOBILE_COLUMN_SIZE';
 export class MobileClipOverviewComponent implements OnInit, OnDestroy {
 
   public currentColumnSize = 50;
-  public groupedActionList$: Observable<IGroupedList[]> = this.appQueries.clipList$.pipe(
+  public groupedActionList$: Observable<IGroupedList[]> = this.appQueries.actionList$.pipe(
     tap(allClips => console.info('PRE',{allClips})),
     map(allClips => sortClips(allClips.filter(c => c.showOnMobile))),
     tap(allClips => console.info('POST', {allClips})),
@@ -76,7 +76,7 @@ export class MobileClipOverviewComponent implements OnInit, OnDestroy {
   private _destroy$ = new Subject();
   constructor(private appQueries: AppQueries,
               private appService: AppService,
-              private _wsService: WebsocketService,
+              private _wsService: MemeboxWebsocketService,
               private _settingsService: SettingsService,
               public activityState: ActivityQueries,
               private _dialogService: DialogService) {

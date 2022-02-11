@@ -13,7 +13,7 @@ import {
   TriggerAction
 } from "@memebox/contracts";
 import {distinctUntilChanged, filter, map, take, takeUntil} from "rxjs/operators";
-import {AppQueries, AppService, ConnectionState, WebsocketService} from "@memebox/app-state";
+import {AppQueries, AppService, ConnectionState, MemeboxWebsocketService} from "@memebox/app-state";
 import {ActivatedRoute} from "@angular/router";
 import {KeyValue} from "@angular/common";
 
@@ -104,7 +104,7 @@ export class TargetScreenComponent implements OnInit, OnDestroy {
   constructor(private appQuery: AppQueries,
               private appService: AppService,
               private route: ActivatedRoute,
-              private wsService: WebsocketService,
+              private wsService: MemeboxWebsocketService,
               private element: ElementRef<HTMLElement>) {
   }
 
@@ -136,7 +136,7 @@ export class TargetScreenComponent implements OnInit, OnDestroy {
       this.appService.loadState();
     });
 
-    this.wsService.onTriggerClip$.pipe(
+    this.wsService.onTriggerAction$.pipe(
       takeUntil(this._destroy$)
     ).subscribe(async triggerPayload => {
       if (triggerPayload.targetScreen === this.screenId) {
@@ -251,8 +251,7 @@ export class TargetScreenComponent implements OnInit, OnDestroy {
     return `rgba(${o(r() * s)},${o(r() * s)},${o(r() * s)},0.34)`;
   }
 
-  parseAndApplyClipCssRules(screenClip: ScreenClip) {
-
+  parseAndApplyClipCssRules(screenClip: ScreenClip): css.Stylesheet {
     const obj = css.parse(screenClip.customCss, {
       silent: true
     });
@@ -343,8 +342,12 @@ export class TargetScreenComponent implements OnInit, OnDestroy {
     this._destroy$.complete();
   }
 
-  toScreenClipCssAgain(screenClip: ScreenClip) {
+  toScreenClipCssAgain(screenClip: ScreenClip): string {
     const obj = this.parseAndApplyClipCssRules(screenClip);
+
+    if (obj.stylesheet.parsingErrors) {
+      return screenClip.customCss;
+    }
 
     return css.stringify(obj);
   }

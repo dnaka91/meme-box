@@ -1,7 +1,7 @@
 import {ChatUserstate} from "tmi.js";
 import {ActionType} from "./media.types";
 import {TriggerAction} from "./actions";
-import {AllTwitchEvents} from "../../../../server/providers/twitch/twitch.connector.types";
+import {AllTwitchEvents} from "./twitch.connector.types";
 import {DefaultImage} from "./twitch-data.types";
 
 // TODO MERGE / IMPROVE THESE TYPE IMPORTS..
@@ -40,14 +40,16 @@ export interface HasExtendedData {
 export interface Action extends HasId, ActionOverridableProperies, HasExtendedData {
   name: string;
   previewUrl?: string;
+  hasPreview?: boolean;
   volumeSetting?: number; //  XX / 100 in percent
+  gainSetting?: number; //  XX / 100 in percent
   clipLength?: number; // optional,ms , simple images / gif dont have any length
   playLength: number; // ms, time to play of this clip
   path: string;
   type: ActionType;
 
   tags?: string[];  // All normal Media-Types can use that to be "tagged"
-                    // the Meta Type will use that to trigger all clips of that tagId
+                    // the Meta Type will use that to trigger all actions of that tagId
 
   metaType?: MetaTriggerTypes;
   metaDelay?: number; // in ms
@@ -57,6 +59,7 @@ export interface Action extends HasId, ActionOverridableProperies, HasExtendedDa
 
 
   fromTemplate?: string; // GUID / Clip.Id of the Template
+  description?: string;
 }
 
 export interface Screen extends HasId {
@@ -167,9 +170,9 @@ export interface TriggerBase
 
 }
 
-// TODO RENAME TimedClip / Twitch so that those are recognized to be a trigger
+// TODO RENAME TimedAction/ Twitch so that those are recognized to be a trigger
 
-export interface TimedClip extends TriggerBase {
+export interface TimedAction extends TriggerBase {
   // id => has nothing to do with clipID
   everyXms: number;
   active: boolean;
@@ -180,6 +183,8 @@ export interface TwitchTrigger extends TriggerBase {
   // screenId:      string; // TODO
   event: TwitchEventTypes;
   contains?: string; // additional settings TODO
+  aliases?: string[];
+
   active: boolean;
 
   roles: string[]; // maybe enum
@@ -220,7 +225,7 @@ export interface SettingsState {
   version: number;
   clips: Dictionary<Action>;
   twitchEvents: Dictionary<TwitchTrigger>;
-  timers: Dictionary<TimedClip>;
+  timers: Dictionary<TimedAction>;
   screen: Dictionary<Screen>;
   tags: Dictionary<Tag>;
 
@@ -254,7 +259,8 @@ export interface TwitchConfig {
   channel: string;
   enableLog?: boolean;
   bot?: TwitchBotConfig;
-  token: string;
+  token: string|null;
+  customScopes?: string[]|null;
 }
 
 export interface ObsConfig {
@@ -269,14 +275,8 @@ export interface TwitchBotConfig {
   command: string;
   auth?: {
     name: string;
-    token: string;
+    token: string | null;
   }
-}
-
-export interface ConfigV0 {
-  mediaFolder: string;
-  twitchChannel: string;
-  twitchLog?: boolean;
 }
 
 export interface NetworkInfo {
@@ -325,3 +325,5 @@ export interface Response {
   ok: boolean;
   id?: string;
 }
+
+export type TwitchConnectionType = "MAIN" | "BOT";

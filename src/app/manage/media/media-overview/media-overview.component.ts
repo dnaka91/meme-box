@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, OnDestroy, OnInit, TrackByFunction} from '@angular/core';
-import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {Action, Screen, Tag} from '@memebox/contracts';
-import {AppQueries, AppService, WebsocketService} from '@memebox/app-state';
+import {AppQueries, AppService, MemeboxWebsocketService} from '@memebox/app-state';
 import {DialogService} from '../../../shared/dialogs/dialog.service';
 import {IFilterItem} from '../../../shared/components/filter/filter.component';
 import {createCombinedFilterItems$, filterClips$} from '../../../shared/components/filter/filter.methods';
@@ -26,9 +26,12 @@ export class MediaOverviewComponent implements OnInit, OnDestroy{
 
   public filteredItems$ = new BehaviorSubject<IFilterItem[]>([]);
 
+  public searchText$ = new BehaviorSubject<string>('');
+
   public mediaList$: Observable<Action[]> = filterClips$(
     this.query.state$,
-    this.filteredItems$
+    this.filteredItems$,
+    this.searchText$
   ).pipe(
     distinctUntilChanged((pre, now) => isEqual(pre, now))
   );
@@ -38,24 +41,15 @@ export class MediaOverviewComponent implements OnInit, OnDestroy{
   public tagList$: Observable<Tag[]> = this.query.tagList$;
   public inOfflineMode$: Observable<boolean> = this.query.inOfflineMode$;
 
+
   public filterItems$: Observable<IFilterItem[]> = createCombinedFilterItems$(
     this.query.state$,
     true
   );
 
-
-  public dontHaveActions$ = this.query.clipList$.pipe(
+  public dontHaveActions$ = this.query.actionList$.pipe(
     map((availableClips) => {
       return availableClips.length === 0;
-    })
-  );
-
-  public showGettingStarted$ = combineLatest([
-    this.query.clipList$,
-    this.screenList$
-  ]).pipe(
-    map(([availableClips, availableScreens]) => {
-      return availableClips.length === 0 || availableScreens.length === 0;
     })
   );
 
@@ -72,7 +66,7 @@ export class MediaOverviewComponent implements OnInit, OnDestroy{
   constructor(public service: AppService,
               public query: AppQueries,
               private _dialog: DialogService,
-              private _wsService: WebsocketService,
+              private _wsService: MemeboxWebsocketService,
               private _uiService: OverviewUiService,
               private configService: ConfigService,) {
     savedBehaviorSubject('mediaOverviewFilter', this.filteredItems$, this.destroy$);
@@ -106,7 +100,7 @@ export class MediaOverviewComponent implements OnInit, OnDestroy{
     });
 
     if (result) {
-      await this.service.deleteClip(clipId);
+      await this.service.deleteAction(clipId);
     }
   }
 

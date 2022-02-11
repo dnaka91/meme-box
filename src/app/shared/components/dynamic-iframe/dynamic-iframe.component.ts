@@ -17,7 +17,7 @@ import {BehaviorSubject, Subject} from "rxjs";
 import {takeUntil} from "rxjs/operators";
 import {WidgetApi} from "./widget-api";
 import {TriggerAction, WEBSOCKET_PATHS} from "@memebox/contracts";
-import {AppService, WebsocketService} from "@memebox/app-state";
+import {AppService, MemeboxWebsocketService} from "@memebox/app-state";
 import {guid} from "@datorama/akita";
 import {WidgetStoreRemoteAdapter} from "./widget-store-remote-adapter.service";
 
@@ -31,6 +31,7 @@ export class DynamicIframeComponent implements OnInit, OnChanges, OnDestroy {
   private _destroy$ = new Subject();
   private _widgetApi: WidgetApi;
   private _widgetInstance = guid();
+  private _onErrorHandlerAttached = false;
 
   @ViewChild('targetIframe', {static: true})
   targetIframe: ElementRef<HTMLIFrameElement>;
@@ -46,7 +47,7 @@ export class DynamicIframeComponent implements OnInit, OnChanges, OnDestroy {
 
   errorSubject$ = new BehaviorSubject<string>('');
 
-  constructor(private websocket: WebsocketService,
+  constructor(private websocket: MemeboxWebsocketService,
               private appService: AppService,
               private remoteStoreApiAdapter: WidgetStoreRemoteAdapter) {
     this.wsHandler = new WebsocketHandler(AppConfig.wsBase+WEBSOCKET_PATHS.TWITCH_EVENTS, 3000);
@@ -64,11 +65,7 @@ export class DynamicIframeComponent implements OnInit, OnChanges, OnDestroy {
     this._widgetApi =currentWidgetApi;
     this.websocket.sendWidgetRegistration(this.mediaId, this._widgetInstance, true);
 
-    this.targetIframe.nativeElement.contentWindow.onerror = (event : string) => {
-      this.errorSubject$.next(event);
-      console.error(event);
-      return false;
-    };
+    this.attachOnError();
 
     this.handleContentUpdate();
 
@@ -109,7 +106,12 @@ export class DynamicIframeComponent implements OnInit, OnChanges, OnDestroy {
       // yes, as any, because we need to add a property to it
       const iframeWindow = this.targetIframe.nativeElement.contentWindow as any;
 
-      iframeWindow.widget = this._widgetApi;
+
+      if (iframeWindow) {
+        iframeWindow.widget = this._widgetApi;
+      }
+
+      this.attachOnError();
 
       dynamicIframe(this.targetIframe.nativeElement, this.content);
 
@@ -123,5 +125,19 @@ export class DynamicIframeComponent implements OnInit, OnChanges, OnDestroy {
         }
       }
     }
+  }
+
+  private attachOnError () {
+    if (this._onErrorHandlerAttached || !this.targetIframe?.nativeElement?.contentWindow) {
+      return;
+    }
+
+    this.targetIframe.nativeElement.contentWindow.onerror = (event : string) => {
+      this.errorSubject$.next(event);
+      console.error(event);
+      return false;
+    };
+
+    this._onErrorHandlerAttached = true;
   }
 }
