@@ -25,6 +25,8 @@ init.json
 
 # dependencies
 /node_modules
+/projects/*/node_modules
+/memebox-streamdeck/node_modules
 
 # IDEs and editors
 /.idea
