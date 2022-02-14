@@ -15,6 +15,11 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+      - name: Setup Angular cache
+        uses: actions/cache@v2
+        with:
+          path: node_modules/.cache
+          key: ${{ runner.os }}-pr-angular-test-${{ hashFiles('**/package-lock.json') }}
       - run: npm install --legacy-peer-deps
       - run: npm run build:prepare
       - run: npm run test:ci
@@ -37,6 +42,11 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+      - name: Setup Angular cache
+        uses: actions/cache@v2
+        with:
+          path: node_modules/.cache
+          key: ${{ runner.os }}-pr-angular-exe-${{ hashFiles('**/package-lock.json') }}
       - name: Setup Rust
         run: rustup install stable
       - name: Setup Rust cache
