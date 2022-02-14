@@ -2,7 +2,7 @@
  * This script is used to rename the binary with the platform specific postfix.
  * When `tauri build` is ran, it looks for the binary name appended with the platform specific postfix.
  */
- 
+
 const execa = require('execa')
 const fs = require('fs')
 
@@ -10,8 +10,13 @@ let suffix = ''
 switch (process.platform) {
   case 'linux':
     suffix = '-linux';
+    break;
   case 'darwin':
-    suffix = '-macos';	
+    suffix = '-macos';
+    break;
+  case 'win32':
+    suffix = "-win";
+    break;
 }
 
 let extension = ''
@@ -25,9 +30,9 @@ async function main() {
   if (!targetTriple) {
     console.error('Failed to determine platform target triple')
   }
-  fs.renameSync(
+  fs.copyFileSync(
     `release/out/memebox${suffix}${extension}`,
-    `release/out/memebox-${targetTriple}${extension}`
+    `src-tauri/binaries/server-${targetTriple}${extension}`
   )
 }
 

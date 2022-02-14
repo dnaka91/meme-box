@@ -21,8 +21,8 @@ fn main() {
 }
 
 async fn run_sidecar(window: Window) {
-    let (mut rx, mut _child) = Command::new_sidecar("memebox")
-        .expect("failed to setup `memebox` sidecar")
+    let (mut rx, mut _child) = Command::new_sidecar("server")
+        .expect("failed to setup `server` sidecar")
         .spawn()
         .expect("failed to spawn packaged node");
 
