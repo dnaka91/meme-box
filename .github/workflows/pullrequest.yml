@@ -2,25 +2,19 @@ name: Pull-Request CI
 
 on:
   pull_request:
-    branches: [ release, develop ]
+    branches: [release, develop]
 
 jobs:
   build_test:
-
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
-      - name: Cache multiple paths
-        uses: actions/cache@v2
-        with:
-          path: |
-            **/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('package.json') }}
-      - name: Use Node.js 12.16.2
+      - name: Setup Node.js and cache
         uses: actions/setup-node@v1
         with:
-          node-version: 12.16.2
+          node-version-file: .nvmrc
+          cache: npm
       - run: npm install --legacy-peer-deps
       - run: npm run build:prepare
       - run: npm run test:ci
@@ -34,35 +28,27 @@ jobs:
 
     strategy:
       matrix:
-        os: [ macos-latest, windows-latest, ubuntu-latest ]
+        os: [macos-latest, windows-latest, ubuntu-latest]
 
     steps:
       - uses: actions/checkout@v2
-      - name: Cache multiple paths
-        uses: actions/cache@v2
-        with:
-          path: |
-            **/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('package.json') }}
-      - name: Use Node.js 12.16.2
+      - name: Setup Node.js and cache
         uses: actions/setup-node@v1
         with:
-          node-version: 12.16.2
-
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Setup Rust
+        run: rustup install stable
+      - name: Setup Rust cache
+        uses: Swatinem/rust-cache@v1
       - run: npm install
-      - run: npm run build:prepare
-      - run: npm run build:nexe -- -o release/out/memebox
-
-      - run: release/out/memebox --cli-test-mode=true  --config=./release/config
-
-      - run: npm run electron:build:only
-
+      - run: npm run tauri:build:linux
+        if: ${{ runner.os == 'Linux' }}
+      - run: npm run tauri:build:macos
+        if: ${{ runner.os == 'macOS' }}
+      - run: npm run tauri:build:windows
+        if: ${{ runner.os == 'Windows' }}
       - uses: actions/upload-artifact@v2
         with:
           name: ${{ matrix.os }}_output
-          path: |
-            release/out/
-            release-electron/
-            !release/config/**
-            !release-electron/*-unpacked/**
-            !release-electron/mac/**
+          path: src-tauri/target/release/bundle/**/*
