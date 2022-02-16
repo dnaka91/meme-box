@@ -47,6 +47,7 @@ init.json
 npm-debug.log
 testem.log
 /typings
+/memebox-streamdeck/package-lock.json
 
 # e2e
 /e2e/*.js
