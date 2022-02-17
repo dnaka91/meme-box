@@ -52,12 +52,14 @@ jobs:
       - name: Setup Rust cache
         uses: Swatinem/rust-cache@v1
       - run: npm install
-      - run: npm run tauri:build:linux
+      - run: npm build:prepare
+      - run: npm run build:linux
         if: ${{ runner.os == 'Linux' }}
-      - run: npm run tauri:build:macos
+      - run: npm run build:macos
         if: ${{ runner.os == 'macOS' }}
-      - run: npm run tauri:build:windows
+      - run: npm run build:windows
         if: ${{ runner.os == 'Windows' }}
+      - run: npm run tauri:build
       - uses: actions/upload-artifact@v2
         with:
           name: ${{ matrix.os }}_output
