@@ -90,12 +90,17 @@ async fn run_sidecar(window: Window, opt: Opt) {
     }
 
     let (mut rx, mut _child) = cmd.spawn().expect("failed to spawn packaged node");
+    let mut wait_ready = true;
 
     while let Some(event) = rx.recv().await {
         match event {
             CommandEvent::Stdout(stdout) => match serde_json::from_str::<LogLine>(&stdout) {
                 Ok(line) => {
-                    if line.category_name == "Persistence" && line.data.0 == "Data saved!" {
+                    if wait_ready
+                        && line.category_name == "Persistence"
+                        && line.data.0 == "Data saved!"
+                    {
+                        wait_ready = false;
                         window
                             .emit("ready", opt.port)
                             .expect("failed to emit `ready` event");
