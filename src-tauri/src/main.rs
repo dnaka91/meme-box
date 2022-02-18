@@ -3,12 +3,32 @@
     windows_subsystem = "windows"
 )]
 
+use std::{borrow::Cow, path::PathBuf};
+
+use clap::Parser;
+use serde::Deserialize;
 use tauri::{
     api::process::{Command, CommandEvent, TerminatedPayload},
     Manager, Menu, MenuEntry, MenuItem, Submenu, Window,
 };
 
+#[derive(Parser)]
+#[clap(about, author, version)]
+struct Opt {
+    /// Port where the server listens on.
+    #[clap(short, long, default_value_t = 6363)]
+    port: u16,
+    /// Custom location for MemeBox's configuration.
+    #[clap(short, long)]
+    config: Option<PathBuf>,
+    /// Custom media folder location.
+    #[clap(short, long)]
+    media: Option<PathBuf>,
+}
+
 fn main() {
+    let opt = Opt::parse();
+
     tauri::Builder::default()
         .menu(Menu::with_items([
             MenuEntry::Submenu(Submenu::new(
@@ -40,7 +60,7 @@ fn main() {
         ]))
         .setup(|app| {
             let window = app.get_window("main").unwrap();
-            tauri::async_runtime::spawn(async move { run_sidecar(window).await });
+            tauri::async_runtime::spawn(async move { run_sidecar(window, opt).await });
 
             Ok(())
         })
@@ -48,24 +68,36 @@ fn main() {
         .expect("error while running tauri application");
 }
 
-async fn run_sidecar(window: Window) {
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct LogLine<'a> {
+    category_name: &'a str,
+    data: (Cow<'a, str>,),
+}
+
+async fn run_sidecar(window: Window, opt: Opt) {
     let (mut rx, mut _child) = Command::new_sidecar("server")
         .expect("failed to setup `server` sidecar")
+        .args(["--stdout-json=true"])
+        .args([format!("--port={}", opt.port)])
         .spawn()
         .expect("failed to spawn packaged node");
 
     while let Some(event) = rx.recv().await {
         match event {
-            CommandEvent::Stdout(stdout) => {
-                println!("{}", stdout);
-
-                // TODO: implement a better readyness detection
-                if stdout.contains("Data saved!") {
-                    window
-                        .emit("ready", ())
-                        .expect("failed to emit `ready` event");
+            CommandEvent::Stdout(stdout) => match serde_json::from_str::<LogLine>(&stdout) {
+                Ok(line) => {
+                    if line.category_name == "Persistence" && line.data.0 == "Data saved!" {
+                        window
+                            .emit("ready", opt.port)
+                            .expect("failed to emit `ready` event");
+                    }
                 }
-            }
+                Err(e) => {
+                    eprintln!("failed parsing log line: {:?}", e);
+                    eprintln!("{}", stdout);
+                }
+            },
             CommandEvent::Stderr(stderr) => {
                 eprintln!("{}", stderr);
             }

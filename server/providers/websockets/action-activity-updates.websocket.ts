@@ -3,6 +3,7 @@ import * as WebSocket from "ws";
 import {AbstractWebsocketHandler} from "./abstract-websocket-handler";
 import {ActionActiveStateEventBus} from "../actions/action-active-state-event.bus";
 import {WEBSOCKET_PATHS} from "@memebox/contracts";
+import { LOGGER } from "../../logger.utils";
 
 @Service()
 export class ActionActivityUpdatesWebsocket extends AbstractWebsocketHandler {
@@ -21,9 +22,8 @@ export class ActionActivityUpdatesWebsocket extends AbstractWebsocketHandler {
   }
 
   protected onConnectedSocket(ws: WebSocket): void {
-    console.info('new ActionActivityUpdates WS Connection');
+    LOGGER.info('new ActionActivityUpdates WS Connection');
   }
 
   WebSocketServerLabel = '';
 }
-

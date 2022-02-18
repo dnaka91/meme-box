@@ -56,7 +56,7 @@ PersistenceInstance.hardRefresh$()
     startWith(true)
   )
   .subscribe(() => {
-    console.info('Data Hard-Refresh');
+    LOGGER.info('Data Hard-Refresh');
     sendDataToAllSockets(ACTIONS.UPDATE_DATA);
   });
 
@@ -139,7 +139,7 @@ PersistenceInstance.configLoaded$.pipe(
 ).subscribe(async () => {
 
   const versionCheckEnabled = PersistenceInstance.getConfig().enableVersionCheck;
-  console.info({ versionCheckEnabled });
+  LOGGER.info(`Version check enabled: ${versionCheckEnabled}`);
 
   if (versionCheckEnabled) {
     if (IS_NIGHTLY) {

@@ -2,6 +2,7 @@ import * as express from 'express';
 import {PersistenceInstance} from "../persistence";
 import {Action, ACTION_TYPE_INFORMATION, ActionType, FileResult, TargetScreenType} from "@memebox/contracts";
 import {getFiles, mapFileInformations} from "../file.utilts";
+import { LOGGER } from '../logger.utils';
 
 // Only used in the Server
 export function mediaToString(mediaType: ActionType) {
@@ -50,7 +51,7 @@ DANGER_ROUTES
 
         const groupedByType = groupBy(fileInfoList, 'fileType');
 
-        console.info({groupedByType});
+        LOGGER.info({groupedByType});
 
         for (const [key, value] of Object.entries(groupedByType)) {
 
@@ -63,7 +64,7 @@ DANGER_ROUTES
           const newClips = value.map(fileInfoToClip);
 
           // add all files (add-all in persistence? , or bulk-mode)
-          console.info({key, newClips, screenPerTypeId});
+          LOGGER.info({key, newClips, screenPerTypeId});
           PersistenceInstance.addAllClipsToScreen(screenPerTypeId, newClips)
         }
 

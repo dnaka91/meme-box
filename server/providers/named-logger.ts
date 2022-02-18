@@ -68,7 +68,7 @@ export function addDefaultLoggerAppenders (logger: Logger) {
 
   const jsonLayout = {
     type: "json",
-    separator: ","
+    separator: ""
   };
 
   logger.appenders

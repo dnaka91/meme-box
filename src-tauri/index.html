@@ -29,7 +29,7 @@
     <div>Starting up...</div>
     <script>
       window.__TAURI__.event.listen('ready', (event) => {
-        window.location.href = 'http://localhost:6363'
+        window.location.href = `http://localhost:${event.payload}`
       })
     </script>
   </body>

@@ -6,6 +6,7 @@ import {Subject} from "rxjs";
 import {ActionQueueEventBus} from "../actions/action-queue-event.bus";
 import {ActionActiveStateEventBus} from "../actions/action-active-state-event.bus";
 import {AbstractWebsocketHandler} from "./abstract-websocket-handler";
+import { LOGGER } from "../../logger.utils";
 
 // UNTIL everything in the backend is refactored to TSED, we need some global instance
 export let CURRENT_MEMEBOX_WEBSOCKET: MemeboxWebsocket;
@@ -101,7 +102,7 @@ export class MemeboxWebsocket extends AbstractWebsocketHandler {
       case ACTIONS.MEDIA_STATE: {
         const mediaStatePayload: ActionActiveStatePayload = JSON.parse(payload);
 
-        console.warn('RECEIVED MEDIA STATE', mediaStatePayload);
+        LOGGER.warn('RECEIVED MEDIA STATE', mediaStatePayload);
 
         this.mediaStateEventBus.updateActionState(mediaStatePayload);
 
