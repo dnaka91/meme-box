@@ -76,12 +76,20 @@ struct LogLine<'a> {
 }
 
 async fn run_sidecar(window: Window, opt: Opt) {
-    let (mut rx, mut _child) = Command::new_sidecar("server")
+    let mut cmd = Command::new_sidecar("server")
         .expect("failed to setup `server` sidecar")
         .args(["--stdout-json=true"])
-        .args([format!("--port={}", opt.port)])
-        .spawn()
-        .expect("failed to spawn packaged node");
+        .args([format!("--port={}", opt.port)]);
+
+    if let Some(config) = opt.config {
+        cmd = cmd.args([format!("--config={}", config.display())]);
+    }
+
+    if let Some(media) = opt.media {
+        cmd = cmd.args([format!("--media={}", media.display())]);
+    }
+
+    let (mut rx, mut _child) = cmd.spawn().expect("failed to spawn packaged node");
 
     while let Some(event) = rx.recv().await {
         match event {
