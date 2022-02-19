@@ -5,21 +5,16 @@ on:
     branches: [release, develop]
 
 jobs:
-  build_test:
+  test:
+    name: Test
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
       - name: Setup Node.js and cache
         uses: actions/setup-node@v2
         with:
           node-version-file: .nvmrc
-          cache: npm
-      - name: Setup Angular cache
-        uses: actions/cache@v2
-        with:
-          path: node_modules/.cache
-          key: ${{ runner.os }}-pr-angular-test-${{ hashFiles('**/package-lock.json') }}
       - run: npm install --legacy-peer-deps
       - run: npm run build:prepare
       - run: npm run test:ci
@@ -28,31 +23,68 @@ jobs:
         with:
           command: npm run test:cypress
 
-  build_executables:
+  headless:
+    name: Build Headless
     runs-on: ${{ matrix.os }}
-
     strategy:
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-latest]
-
+        os: [macos-latest, ubuntu-latest, windows-latest]
     steps:
-      - uses: actions/checkout@v2
-      - name: Setup Node.js and cache
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version-file: .nvmrc
-          cache: npm
-      - name: Setup Angular cache
-        uses: actions/cache@v2
+          node-version: 12.16.2
+      - run: npm install
+      - run: npm run build:prepare
+      - run: npm run build:nexe -- -o release/out/memebox
+      - run: release/out/memebox --cli-test-mode=true --config=./release/config
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
         with:
-          path: node_modules/.cache
-          key: ${{ runner.os }}-pr-angular-exe-${{ hashFiles('**/package-lock.json') }}
+          name: headless-${{ matrix.os }}
+          path: release/out
+  electron:
+    name: Build Electron
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 12.16.2
+      - run: npm install
+      - run: npm run build:prepare
+      - run: npm run electron:build:only
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: electron-${{ matrix.os }}
+          path: release-electron/memebox*
+  tauri:
+    name: Build Tauri
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 12.16.2
       - name: Setup Rust
         run: rustup install stable
       - name: Setup Rust cache
         uses: Swatinem/rust-cache@v1
       - run: npm install
-      - run: npm build:prepare
+      - run: npm run build:prepare
       - run: npm run build:linux
         if: ${{ runner.os == 'Linux' }}
       - run: npm run build:macos
@@ -60,7 +92,8 @@ jobs:
       - run: npm run build:windows
         if: ${{ runner.os == 'Windows' }}
       - run: npm run tauri:build
-      - uses: actions/upload-artifact@v2
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
         with:
-          name: ${{ matrix.os }}_output
+          name: tauri-${{ matrix.os }}
           path: src-tauri/target/release/bundle/**/*
