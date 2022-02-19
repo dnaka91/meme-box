@@ -20,7 +20,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: node_modules/.cache
-          key: pr-angular-test-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          key: pr-angular-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
       - run: npm install --legacy-peer-deps
       - run: npm run build:prepare
       - run: npm run test:ci
@@ -57,7 +57,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: node_modules/.cache
-          key: pr-angular-headless-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          key: pr-angular-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
       - run: npm install
       - run: npm run build:prepare
       - run: npm run build:nexe -- -o release/out/memebox
@@ -85,7 +85,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: node_modules/.cache
-          key: pr-angular-electron-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          key: pr-angular-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
       - run: npm install
       - run: npm run build:prepare
       - run: npm run electron:build:only
@@ -112,7 +112,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: node_modules/.cache
-          key: pr-angular-tauri-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          key: pr-angular-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
       - name: Setup Rust
         run: rustup install stable
       - name: Setup Rust cache
