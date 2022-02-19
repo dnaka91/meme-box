@@ -5,8 +5,8 @@ on:
     branches: [release, develop]
 
 jobs:
-  test:
-    name: Test
+  unit-test:
+    name: Unit Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -24,7 +24,17 @@ jobs:
       - run: npm install --legacy-peer-deps
       - run: npm run build:prepare
       - run: npm run test:ci
-      - name: Run Cypress tests 🧪
+  e2e-tests:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version-file: .nvmrc
+      - name: Run Cypress tests
         uses: cypress-io/github-action@v2
         with:
           command: npm run test:cypress
