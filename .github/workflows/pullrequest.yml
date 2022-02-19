@@ -117,6 +117,8 @@ jobs:
         run: rustup install stable
       - name: Setup Rust cache
         uses: Swatinem/rust-cache@v1
+        with:
+          working-directory: src-tauri
       - name: Install WebKit dependencies
         run: sudo apt-get install -y --no-install-recommends libwebkit2gtk-4.0-dev
         if: ${{ runner.os == 'Linux' }}
