@@ -93,7 +93,10 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: electron-${{ matrix.os }}
-          path: release-electron/memebox*.{dmg,AppImage,exe}
+          path: |
+            release-electron/memebox*.dmg
+            release-electron/memebox*.AppImage
+            release-electron/memebox*.exe
   tauri:
     name: Build Tauri
     runs-on: ${{ matrix.os }}
