@@ -14,9 +14,6 @@ switch (process.platform) {
   case 'darwin':
     suffix = '-macos';
     break;
-  case 'win32':
-    suffix = "-win";
-    break;
 }
 
 let extension = ''
