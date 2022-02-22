@@ -60,16 +60,14 @@ jobs:
           key: pr-angular-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
       - run: npm install
       - run: npm run build:prepare
+      - name: Package cache data
+        run: tar --zstd -cf cache.tar.zst dist ncc node_modules out-* release*
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: prepare-${{ matrix.os }}
-          path: |
-            dist
-            ncc
-            node_modules
-            out-*
-            release*
+          path: cache.tar.zst
+          retention-days: 1
 
   headless:
     name: Build Headless
@@ -90,6 +88,8 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: prepare-${{ matrix.os }}
+      - name: Extract caches
+        run: tar --zstd -xf cache.tar.zst
       - run: npm run build:nexe -- -o release/out/memebox
       - run: release/out/memebox --cli-test-mode=true --config=./release/config
       - name: Upload artifacts
@@ -116,6 +116,8 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: prepare-${{ matrix.os }}
+      - name: Extract caches
+        run: tar --zstd -xf cache.tar.zst
       - run: npm run electron:build:only
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
@@ -153,6 +155,8 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: prepare-${{ matrix.os }}
+      - name: Extract caches
+        run: tar --zstd -xf cache.tar.zst
       - run: npm run build:linux
         if: ${{ runner.os == 'Linux' }}
       - run: npm run build:macos
