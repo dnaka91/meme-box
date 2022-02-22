@@ -61,6 +61,7 @@ jobs:
       - run: npm install
       - run: npm run build:prepare
       - name: Package cache data
+        shell: bash
         run: |
           TAR=tar
           if [[ "${{ runner.os }}" == "macOS" ]]; then TAR=gtar; fi
@@ -92,6 +93,7 @@ jobs:
         with:
           name: prepare-${{ matrix.os }}
       - name: Extract caches
+        shell: bash
         run: tar --zstd -xf cache.tar.zst
       - run: npm run build:nexe -- -o release/out/memebox
       - run: release/out/memebox --cli-test-mode=true --config=./release/config
@@ -120,6 +122,7 @@ jobs:
         with:
           name: prepare-${{ matrix.os }}
       - name: Extract caches
+        shell: bash
         run: tar --zstd -xf cache.tar.zst
       - run: npm run electron:build:only
       - name: Upload artifacts
@@ -159,6 +162,7 @@ jobs:
         with:
           name: prepare-${{ matrix.os }}
       - name: Extract caches
+        shell: bash
         run: tar --zstd -xf cache.tar.zst
       - run: npm run build:linux
         if: ${{ runner.os == 'Linux' }}
