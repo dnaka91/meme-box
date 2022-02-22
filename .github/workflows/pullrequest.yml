@@ -62,15 +62,12 @@ jobs:
       - run: npm run build:prepare
       - name: Package cache data
         shell: bash
-        run: |
-          TAR=tar
-          if [[ "${{ runner.os }}" == "macOS" ]]; then TAR=gtar; fi
-          $TAR --zstd -cf cache.tar.zst dist ncc node_modules out-* release*
+        run: tar -czf cache.tgz dist ncc node_modules out-* release*
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: prepare-${{ matrix.os }}
-          path: cache.tar.zst
+          path: cache.tgz
           retention-days: 1
 
   headless:
@@ -94,7 +91,7 @@ jobs:
           name: prepare-${{ matrix.os }}
       - name: Extract caches
         shell: bash
-        run: tar --zstd -xf cache.tar.zst
+        run: tar -xzf cache.tgz
       - run: npm run build:nexe -- -o release/out/memebox
       - run: release/out/memebox --cli-test-mode=true --config=./release/config
       - name: Upload artifacts
@@ -123,7 +120,7 @@ jobs:
           name: prepare-${{ matrix.os }}
       - name: Extract caches
         shell: bash
-        run: tar --zstd -xf cache.tar.zst
+        run: tar -xzf cache.tgz
       - run: npm run electron:build:only
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
@@ -163,7 +160,7 @@ jobs:
           name: prepare-${{ matrix.os }}
       - name: Extract caches
         shell: bash
-        run: tar --zstd -xf cache.tar.zst
+        run: tar -xzf cache.tgz
       - run: npm run build:linux
         if: ${{ runner.os == 'Linux' }}
       - run: npm run build:macos
