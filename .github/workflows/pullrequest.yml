@@ -39,8 +39,8 @@ jobs:
         with:
           command: npm run test:cypress
 
-  headless:
-    name: Build Headless
+  prepare:
+    name: Prepare Extra Caches
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -60,6 +60,36 @@ jobs:
           key: pr-angular-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
       - run: npm install
       - run: npm run build:prepare
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: prepare-${{ matrix.os }}
+          path: |
+            dist
+            ncc
+            node_modules
+            out-*
+            release*
+
+  headless:
+    name: Build Headless
+    runs-on: ${{ matrix.os }}
+    needs: prepare
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 12.16.2
+          cache: npm
+      - name: Download extra caches
+        uses: actions/download-artifact@v2
+        with:
+          name: prepare-${{ matrix.os }}
       - run: npm run build:nexe -- -o release/out/memebox
       - run: release/out/memebox --cli-test-mode=true --config=./release/config
       - name: Upload artifacts
@@ -70,6 +100,7 @@ jobs:
   electron:
     name: Build Electron
     runs-on: ${{ matrix.os }}
+    needs: prepare
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
@@ -81,13 +112,10 @@ jobs:
         with:
           node-version: 12.16.2
           cache: npm
-      - name: Setup Angular cache
-        uses: actions/cache@v2
+      - name: Download extra caches
+        uses: actions/download-artifact@v2
         with:
-          path: node_modules/.cache
-          key: pr-angular-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-      - run: npm install
-      - run: npm run build:prepare
+          name: prepare-${{ matrix.os }}
       - run: npm run electron:build:only
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
@@ -100,6 +128,7 @@ jobs:
   tauri:
     name: Build Tauri
     runs-on: ${{ matrix.os }}
+    needs: prepare
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
@@ -111,11 +140,6 @@ jobs:
         with:
           node-version: 12.16.2
           cache: npm
-      - name: Setup Angular cache
-        uses: actions/cache@v2
-        with:
-          path: node_modules/.cache
-          key: pr-angular-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
       - name: Setup Rust
         run: rustup install stable
       - name: Setup Rust cache
@@ -125,8 +149,10 @@ jobs:
       - name: Install WebKit dependencies
         run: sudo apt-get install -y --no-install-recommends libwebkit2gtk-4.0-dev
         if: ${{ runner.os == 'Linux' }}
-      - run: npm install
-      - run: npm run build:prepare
+      - name: Download extra caches
+        uses: actions/download-artifact@v2
+        with:
+          name: prepare-${{ matrix.os }}
       - run: npm run build:linux
         if: ${{ runner.os == 'Linux' }}
       - run: npm run build:macos
