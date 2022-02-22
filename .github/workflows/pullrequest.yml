@@ -61,9 +61,9 @@ jobs:
       - run: npm install
       - run: npm run build:prepare
       - name: Package cache data
-        run:
+        run: |
           TAR=tar
-          if [ "${{ runner.os }}" = "macOS" ]; then TAR=gtar; fi
+          if [[ "${{ runner.os }}" == "macOS" ]]; then TAR=gtar; fi
           $TAR --zstd -cf cache.tar.zst dist ncc node_modules out-* release*
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
