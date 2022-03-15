@@ -2,7 +2,6 @@ import * as express from 'express';
 import {PersistenceInstance} from "../persistence";
 import {Action, ACTION_TYPE_INFORMATION, ActionType, FileResult, TargetScreenType} from "@memebox/contracts";
 import {getFiles, mapFileInformations} from "../file.utilts";
-import { LOGGER } from '../logger.utils';
 
 // Only used in the Server
 export function mediaToString(mediaType: ActionType) {

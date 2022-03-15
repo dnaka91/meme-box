@@ -3,7 +3,6 @@ import {ActionActiveStateEventBus} from "./action-active-state-event.bus";
 import {filter, map, take} from "rxjs/operators";
 import {ActionStateEnum} from "@memebox/contracts";
 import {ActionStateEntries, isActionCurrently, updateActivityInState} from "@memebox/shared-state";
-import { LOGGER } from "../../logger.utils";
 
 @Service()
 export class ActionActiveState {

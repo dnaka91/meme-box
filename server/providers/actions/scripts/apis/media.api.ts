@@ -9,7 +9,6 @@ import {timeoutAsync} from "./sleep.api";
 import merge from "lodash/merge";
 import {MemeboxApi} from "./memebox.api";
 import {uuid} from "@gewd/utils";
-import { LOGGER } from "../../../../logger.utils";
 
 export class MediaApi extends ActionApi {
   constructor(
