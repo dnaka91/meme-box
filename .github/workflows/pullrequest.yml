@@ -2,155 +2,90 @@ name: Pull-Request CI
 
 on:
   pull_request:
-    branches: [ release, develop ]
+    branches: [release, develop]
 env:
   BEFORE_SHA: ${{ github.event.before }}
   TARGET_BRANCH: ${{ github.event.pull_request.base.ref }}
 
 jobs:
-  unit-test:
-    name: Unit Tests
+  build_test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-      - name: Setup Node.js and cache
-        uses: actions/setup-node@v2
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-      - name: Setup Angular cache
+      - uses: actions/checkout@v2
+      - name: Cache multiple paths
         uses: actions/cache@v2
         with:
-          path: node_modules/.cache
-          key: pr-angular-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('package.json') }}
+      - name: Use Node.js 12.16.2
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.16.2
       - run: npm install --legacy-peer-deps
       - name: Run Affected Lint
         shell: bash
         run: npm run affected:lint -- --base=origin/$TARGET_BRANCH
       - run: npm run build:prepare
       - run: npm run test:ci
-  e2e-tests:
-    name: E2E Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version-file: .nvmrc
-      - name: Run Cypress tests
+      - name: Run Cypress tests 🧪
         uses: cypress-io/github-action@v2
         with:
           command: npm run test:cypress
 
-  prepare:
-    name: Prepare Extra Caches
+  build_executables:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [macos-latest, windows-latest, ubuntu-latest]
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: 12.16.2
-          cache: npm
-      - name: Setup Angular cache
+      - uses: actions/checkout@v2
+      - name: Cache multiple paths
         uses: actions/cache@v2
         with:
-          path: node_modules/.cache
-          key: pr-angular-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('package.json') }}
+      - name: Use Node.js 12.16.2
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.16.2
+
       - run: npm install
       - run: npm run build:prepare
-      - name: Package cache data
-        shell: bash
-        run: tar -czf cache.tgz dist ncc node_modules out-* release*
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: prepare-${{ matrix.os }}
-          path: cache.tgz
-          retention-days: 1
-
-  headless:
-    name: Build Headless
-    runs-on: ${{ matrix.os }}
-    needs: prepare
-    strategy:
-      matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: 12.16.2
-          cache: npm
-      - name: Download extra caches
-        uses: actions/download-artifact@v2
-        with:
-          name: prepare-${{ matrix.os }}
-      - name: Extract caches
-        shell: bash
-        run: tar -xzf cache.tgz
       - run: npm run build:nexe -- -o release/out/memebox
-      - run: release/out/memebox --cli-test-mode=true --config=./release/config
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: headless-${{ matrix.os }}
-          path: release/out
-  electron:
-    name: Build Electron
-    runs-on: ${{ matrix.os }}
-    needs: prepare
-    strategy:
-      matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: 12.16.2
-          cache: npm
-      - name: Download extra caches
-        uses: actions/download-artifact@v2
-        with:
-          name: prepare-${{ matrix.os }}
-      - name: Extract caches
-        shell: bash
-        run: tar -xzf cache.tgz
+
+      - run: release/out/memebox --cli-test-mode=true  --config=./release/config
+
       - run: npm run electron:build:only
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+
+      - uses: actions/upload-artifact@v2
         with:
-          name: electron-${{ matrix.os }}
+          name: ${{ matrix.os }}_output
           path: |
-            release-electron/memebox*.dmg
-            release-electron/memebox*.AppImage
-            release-electron/memebox*.exe
-  tauri:
-    name: Build Tauri
+            release/out/
+            release-electron/
+            !release/config/**
+            !release-electron/*-unpacked/**
+            !release-electron/mac/**
+
+  build_tauri:
     runs-on: ${{ matrix.os }}
-    needs: prepare
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
+      - uses: actions/checkout@v2
+      - name: Cache multiple paths
+        uses: actions/cache@v2
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('package.json') }}
+      - name: Use Node.js 12.16.2
+        uses: actions/setup-node@v1
         with:
           node-version: 12.16.2
-          cache: npm
       - name: Setup Rust
         run: rustup install stable
       - name: Setup Rust cache
@@ -158,15 +93,12 @@ jobs:
         with:
           working-directory: src-tauri
       - name: Install WebKit dependencies
-        run: sudo apt-get install -y --no-install-recommends libwebkit2gtk-4.0-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libwebkit2gtk-4.0-dev
         if: ${{ runner.os == 'Linux' }}
-      - name: Download extra caches
-        uses: actions/download-artifact@v2
-        with:
-          name: prepare-${{ matrix.os }}
-      - name: Extract caches
-        shell: bash
-        run: tar -xzf cache.tgz
+      - run: npm install
+      - run: npm run build:prepare
       - run: npm run build:linux
         if: ${{ runner.os == 'Linux' }}
       - run: npm run build:macos
