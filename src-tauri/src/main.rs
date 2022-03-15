@@ -9,7 +9,8 @@ use clap::Parser;
 use serde::Deserialize;
 use tauri::{
     api::process::{Command, CommandEvent, TerminatedPayload},
-    Manager, Menu, MenuEntry, MenuItem, Submenu, Window,
+    CustomMenuItem, Manager, Menu, MenuEntry, MenuItem, Submenu, SystemTray, SystemTrayEvent,
+    SystemTrayMenu, SystemTrayMenuItem, Window,
 };
 
 #[derive(Parser)]
@@ -28,6 +29,14 @@ struct Opt {
 
 fn main() {
     let opt = Opt::parse();
+
+    let tray = SystemTray::new().with_menu(
+        SystemTrayMenu::new()
+            .add_item(CustomMenuItem::new("show_all".to_owned(), "Show All"))
+            .add_item(CustomMenuItem::new("hide".to_owned(), "Hide"))
+            .add_native_item(SystemTrayMenuItem::Separator)
+            .add_item(CustomMenuItem::new("quit".to_owned(), "Quit")),
+    );
 
     tauri::Builder::default()
         .menu(Menu::with_items([
@@ -58,6 +67,25 @@ fn main() {
                 Menu::with_items([MenuItem::Minimize.into(), MenuItem::Zoom.into()]),
             )),
         ]))
+        .system_tray(tray)
+        .on_system_tray_event(|app, event| {
+            if let SystemTrayEvent::MenuItemClick { id, .. } = event {
+                match id.as_str() {
+                    "show_all" => {
+                        for (_, window) in app.windows() {
+                            window.show().unwrap();
+                        }
+                    }
+                    "hide" => {
+                        app.get_window("main").unwrap().hide().unwrap();
+                    }
+                    "quit" => {
+                        app.exit(0);
+                    }
+                    _ => {}
+                }
+            }
+        })
         .setup(|app| {
             let window = app.get_window("main").unwrap();
             tauri::async_runtime::spawn(async move { run_sidecar(window, opt).await });
