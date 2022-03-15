@@ -13,7 +13,7 @@ import {
   TriggerAction
 } from "@memebox/contracts";
 import {distinctUntilChanged, filter, map, take, takeUntil} from "rxjs/operators";
-import {AppQueries, AppService, ConnectionState, MemeboxWebsocketService} from "@memebox/app-state";
+import {AppQueries, AppService, ConnectionStateEnum, MemeboxWebsocketService} from "@memebox/app-state";
 import {ActivatedRoute} from "@angular/router";
 import {KeyValue} from "@angular/common";
 
@@ -72,10 +72,10 @@ export class TargetScreenComponent implements OnInit, OnDestroy {
   clipToControlMap = new Map<string, HTMLVideoElement | HTMLAudioElement | HTMLImageElement | HTMLIFrameElement>();
 
   showOfflineIcon$ = this.wsService.connectionState$.pipe(
-    map(value => ![ConnectionState.Connected, ConnectionState.Offline].includes(value))
+    map(value => ![ConnectionStateEnum.Connected, ConnectionStateEnum.Offline].includes(value))
   );
 
-  ConnectionState = ConnectionState;
+  ConnectionState = ConnectionStateEnum;
 
   screen$ = combineLatest([
     this.screenId$,
@@ -91,7 +91,7 @@ export class TargetScreenComponent implements OnInit, OnDestroy {
   }
 
   @Input()
-  public screenId: string = '';
+  public screenId = '';
 
   @HostBinding('id')
   public get cssId() {
@@ -382,7 +382,7 @@ export class TargetScreenComponent implements OnInit, OnDestroy {
   }
 
   private randomAnimation(animations: string[]) {
-    var randomIndex = Math.floor(Math.random() * animations.length);     // returns a random integer from 0 to 9
+    const randomIndex = Math.floor(Math.random() * animations.length);     // returns a random integer from 0 to 9
 
     return animations[randomIndex];
   }

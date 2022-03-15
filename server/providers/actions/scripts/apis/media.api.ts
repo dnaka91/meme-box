@@ -51,8 +51,6 @@ export class MediaApi extends ActionApi {
       }
     });
 
-    LOGGER.info({newOverrides});
-
     this.memeboxApi.actionTriggerEventBus.queueAction({
       id: this.actionId,
       uniqueId: uuid(),

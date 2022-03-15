@@ -51,8 +51,6 @@ DANGER_ROUTES
 
         const groupedByType = groupBy(fileInfoList, 'fileType');
 
-        LOGGER.info({groupedByType});
-
         for (const [key, value] of Object.entries(groupedByType)) {
 
           const screenPerTypeId = PersistenceInstance.addScreen({
@@ -64,7 +62,6 @@ DANGER_ROUTES
           const newClips = value.map(fileInfoToClip);
 
           // add all files (add-all in persistence? , or bulk-mode)
-          LOGGER.info({key, newClips, screenPerTypeId});
           PersistenceInstance.addAllClipsToScreen(screenPerTypeId, newClips)
         }
 
@@ -97,4 +94,4 @@ function groupBy<T>(xs: T[], key: keyof T): {[key: string]: T[]} {
     (rv[x[key] as any] = rv[x[key] as any] || []).push(x);
     return rv;
   }, {});
-};
+}

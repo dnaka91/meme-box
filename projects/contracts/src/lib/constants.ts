@@ -8,11 +8,16 @@ export const ENDPOINTS = {
   SCREEN: 'screen',
   OBS_CLIPS: 'clips',
   ERROR: 'error',
-  OPEN: 'open',
   STATE: 'state',
 
   TIMED_EVENTS: 'timed_events',
   NETWORK_LIST: 'network_ip_list',
+
+  OPEN: {
+    PREFIX: 'open',
+    CONFIG: '/config',
+    FILES: '/files',
+  },
 
   CONFIG: {
     PREFIX: 'config',
@@ -27,6 +32,12 @@ export const ENDPOINTS = {
     TRIGGER_CONFIG_EXAMPLE: '/trigger_config_example',
     TRIGGER_EVENT: '/trigger_event',
     LAST_20_EVENTS: '/last_events'
+  },
+
+  OBS_DATA: {
+    PREFIX: 'obsData',
+    CURRENT_BROWSER_SOURCES: '/currentBrowserSources',
+    REFRESH_BROWSER_SOURCE: '/refreshBrowserSource'
   },
 
 
@@ -58,9 +69,6 @@ export const ENDPOINTS = {
   },
 }
 
-export const OPEN_CONFIG_PATH = `/config`;
-export const OPEN_FILES_PATH = `/files`;
-
 export const TwitchTypesArray = [
   // TwitchEventTypes.follow,
   TwitchEventTypes.bits,
@@ -76,6 +84,7 @@ export const TwitchTypesArray = [
 export const WEBSOCKET_PATHS = {
   TWITCH_EVENTS: '/ws/twitch_events',
   ACTION_ACTIVITY: '/ws/action_activity',
+  SCREEN_ACTIVITY: '/ws/screen_activity',
   CONNECTIONS_STATE: '/ws/connections_state',
   ERRORS: '/ws/errors',
 };

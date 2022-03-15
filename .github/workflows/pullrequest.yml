@@ -2,7 +2,10 @@ name: Pull-Request CI
 
 on:
   pull_request:
-    branches: [release, develop]
+    branches: [ release, develop ]
+env:
+  BEFORE_SHA: ${{ github.event.before }}
+  TARGET_BRANCH: ${{ github.event.pull_request.base.ref }}
 
 jobs:
   unit-test:
@@ -22,6 +25,9 @@ jobs:
           path: node_modules/.cache
           key: pr-angular-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
       - run: npm install --legacy-peer-deps
+      - name: Run Affected Lint
+        shell: bash
+        run: npm run affected:lint -- --base=origin/$TARGET_BRANCH
       - run: npm run build:prepare
       - run: npm run test:ci
   e2e-tests:

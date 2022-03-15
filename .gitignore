@@ -71,3 +71,6 @@ Thumbs.db
 documentation.json
 !.storybook/**.*
 !/decorate-angular-cli.js
+
+# misc
+.eslintcache

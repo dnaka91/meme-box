@@ -1,8 +1,8 @@
-import {Component, OnInit, TrackByFunction} from '@angular/core';
+import {Component, TrackByFunction} from '@angular/core';
 import {Action, ClipAssigningMode, HasId, Screen, UnassignedFilterEnum} from "@memebox/contracts";
 import {Observable} from "rxjs";
 import {map, take} from "rxjs/operators";
-import {AppQueries, AppService, MemeboxWebsocketService, SnackbarService} from "@memebox/app-state";
+import {ActivityQueries, AppQueries, AppService, MemeboxWebsocketService, SnackbarService} from "@memebox/app-state";
 import {DialogService} from "../../../shared/dialogs/dialog.service";
 import orderBy from 'lodash/orderBy';
 import {ScreenUrlDialogComponent} from "./screen-url-dialog/screen-url-dialog.component";
@@ -17,7 +17,7 @@ function timeout(ms) {
   templateUrl: './screen-overview.component.html',
   styleUrls: ['./screen-overview.component.scss']
 })
-export class ScreenOverviewComponent implements OnInit {
+export class ScreenOverviewComponent {
 
   public screenList$: Observable<Screen[]> = this._queries.screensList$.pipe(
     map(stateUrlArray => orderBy(stateUrlArray, 'name'))
@@ -31,12 +31,10 @@ export class ScreenOverviewComponent implements OnInit {
     private _dialog: DialogService,
     private _queries: AppQueries,
     public service: AppService,
+    public activityState: ActivityQueries,
     private webSocket: MemeboxWebsocketService,
     private snackbar: SnackbarService
   ) {
-  }
-
-  ngOnInit(): void {
   }
 
   showDialog(screen: Partial<Screen>) {

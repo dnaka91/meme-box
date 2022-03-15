@@ -38,8 +38,6 @@ export class ActionActiveState {
       return Promise.resolve();
     }
 
-    LOGGER.info('Created a waitUntilDoneAsync - ', mediaId);
-
     // first try
     return this.mediaStateEventBus.AllEvents$.pipe(
       filter(e => {

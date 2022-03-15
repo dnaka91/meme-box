@@ -5,8 +5,6 @@ import {
   Config,
   ENDPOINTS,
   ObsConfig,
-  OPEN_CONFIG_PATH,
-  OPEN_FILES_PATH,
   TwitchAuthInformation,
   TwitchConfig,
   TwitchConnectionType
@@ -14,25 +12,30 @@ import {
 import {DANGER_CLEAN_CONFIG_ENDPOINT, DANGER_IMPORT_ALL_ENDPOINT} from '../../../../../server/constants';
 import {setDummyData} from '../state/app.dummy.data';
 import {MemeboxWebsocketService} from "./memebox-websocket.service";
-import {API_BASE, AppService, EXPRESS_BASE} from "../state/app.service";
+import {AppService} from "../state/app.service";
 import {SnackbarService} from "./snackbar.service";
+import {EXPRESS_BASE, MemeboxApiService} from "../state/memeboxApi.service";
+import {ConnectionStateService} from "../state/connection-state.service";
 
 const NOT_POSSIBLE_OFFLINE = 'Not possible in Offline-Mode.';
 
-
-@Injectable()
+@Injectable({
+  providedIn: "root"
+})
 export class ConfigService {
 
   constructor(private appStore: AppStore,
               public http: HttpClient,  // todo extract http client and api_url base including the offline checks
               private snackbar: SnackbarService,
               private websocketService: MemeboxWebsocketService,
-              private appService: AppService) {
+              private appService: AppService,
+              private memeboxApi: MemeboxApiService,
+              private connectionStateService: ConnectionStateService) {
   }
 
   public async updateConfig(newConfig: Partial<Config>) {
     // update path & await
-    await this.appService.tryHttpPut( this.configEndpoint(''), newConfig);
+    await this.memeboxApi.put( this.configEndpoint(''), newConfig);
 
     // update state
     this.appStore.update(state => {
@@ -46,7 +49,7 @@ export class ConfigService {
     };
 
     // update path & await
-    await this.appService.tryHttpPut( this.configEndpoint(ENDPOINTS.CONFIG.CUSTOM_PORT), newConfig);
+    await this.memeboxApi.put( this.configEndpoint(ENDPOINTS.CONFIG.CUSTOM_PORT), newConfig);
 
     // add to the state
     this.appStore.update(state => {
@@ -59,7 +62,7 @@ export class ConfigService {
 
   public async updateObsConfig(newConfig: Partial<ObsConfig>) {
     // update path & await
-    await this.appService.tryHttpPut(this.configEndpoint(ENDPOINTS.CONFIG.OBS), newConfig);
+    await this.memeboxApi.put(this.configEndpoint(ENDPOINTS.CONFIG.OBS), newConfig);
 
     // add to the state
     this.appStore.update(state => {
@@ -72,7 +75,7 @@ export class ConfigService {
 
   public async updateTwitchConfig(newConfig: Partial<TwitchConfig>) {
     // update path & await
-    await this.appService.tryHttpPut(this.configEndpoint(ENDPOINTS.CONFIG.TWITCH), newConfig);
+    await this.memeboxApi.put(this.configEndpoint(ENDPOINTS.CONFIG.TWITCH), newConfig);
 
     // add to the state
     this.appStore.update(state => {
@@ -85,7 +88,7 @@ export class ConfigService {
 
   public async revokeToken(tokenType: TwitchConnectionType) {
     // update path & await
-    await this.appService.tryHttpDelete(this.configEndpoint(ENDPOINTS.CONFIG.TWITCH_REVOKE) + tokenType);
+    await this.memeboxApi.delete(this.configEndpoint(ENDPOINTS.CONFIG.TWITCH_REVOKE) + tokenType);
 
     // add to the state
     this.appStore.update(state => {
@@ -112,20 +115,20 @@ export class ConfigService {
 
 
   public async openMediaFolder() {
-    if (this.appService.isOffline()) {
+    if (this.connectionStateService.isOffline()) {
       this.snackbar.sorry(NOT_POSSIBLE_OFFLINE);
     } else {
       // update path & await
-      await this.http.get<string>(this.openEndpoint(OPEN_FILES_PATH)).toPromise();
+      await this.memeboxApi.get<string>(this.openEndpoint(ENDPOINTS.OPEN.FILES));
     }
   }
 
   public async openConfigFolder() {
-    if (this.appService.isOffline()) {
+    if (this.connectionStateService.isOffline()) {
       this.snackbar.sorry(NOT_POSSIBLE_OFFLINE);
     } else {
       // update path & await
-      await this.http.get<string>(this.openEndpoint(OPEN_CONFIG_PATH)).toPromise();
+      await this.memeboxApi.get<string>(this.openEndpoint(ENDPOINTS.OPEN.CONFIG));
     }
   }
 
@@ -138,7 +141,7 @@ export class ConfigService {
   }
 
   public async deleteAll() {
-    if (this.appService.isOffline()) {
+    if (this.connectionStateService.isOffline()) {
       this.snackbar.sorry(NOT_POSSIBLE_OFFLINE);
     } else {
       await this.http.post<any>(`${EXPRESS_BASE}${DANGER_CLEAN_CONFIG_ENDPOINT}`, null).toPromise();
@@ -147,7 +150,7 @@ export class ConfigService {
   }
 
   public async importAll(body: any) {
-    if (this.appService.isOffline()) {
+    if (this.connectionStateService.isOffline()) {
       this.snackbar.sorry(NOT_POSSIBLE_OFFLINE);
     } else {
       await this.http.post<any>(`${EXPRESS_BASE}${DANGER_IMPORT_ALL_ENDPOINT}`, body).toPromise();
@@ -157,15 +160,15 @@ export class ConfigService {
 
 
   public loadTwitchAuthInformations(): Promise<TwitchAuthInformation[]|undefined> {
-    return this.appService.tryHttpGet<TwitchAuthInformation[]>(`${API_BASE}${ENDPOINTS.TWITCH_DATA.PREFIX}${ENDPOINTS.TWITCH_DATA.AUTH_INFORMATIONS}`);
+    return this.memeboxApi.get<TwitchAuthInformation[]>(`${ENDPOINTS.TWITCH_DATA.PREFIX}${ENDPOINTS.TWITCH_DATA.AUTH_INFORMATIONS}`);
   }
 
 
   private configEndpoint(endpoint: string) {
-    return `${API_BASE}${ENDPOINTS.CONFIG.PREFIX}${endpoint}`;
+    return `${ENDPOINTS.CONFIG.PREFIX}${endpoint}`;
   }
 
   private openEndpoint(endpoint: string) {
-    return `${API_BASE}${ENDPOINTS.OPEN}${endpoint}`;
+    return `${ENDPOINTS.OPEN.PREFIX}${endpoint}`;
   }
 }
