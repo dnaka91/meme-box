@@ -37,7 +37,10 @@ export const ENDPOINTS = {
   OBS_DATA: {
     PREFIX: 'obsData',
     CURRENT_BROWSER_SOURCES: '/currentBrowserSources',
-    REFRESH_BROWSER_SOURCE: '/refreshBrowserSource'
+    REFRESH_BROWSER_SOURCE: '/refreshBrowserSource',
+    SCENE_LIST: '/sceneList',
+    SOURCE_LIST: '/sourceList',
+    SOURCE_FILTER_LIST: '/sourceFilters/',
   },
 
 
@@ -58,7 +61,8 @@ export const ENDPOINTS = {
     PREFIX: 'action',
     SIMPLE_LIST: '/simpleList',
     LAST_20_ACTIONS: '/last_actions',
-    TRIGGER_ACTION: '/trigger/'
+    TRIGGER_ACTION: '/trigger/',
+    LAST_OVERRIDES: '/lastOverrides/'
   },
 
   FILE: {
