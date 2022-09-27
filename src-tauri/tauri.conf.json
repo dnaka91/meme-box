@@ -1,4 +1,5 @@
 {
+  "$schema": "../node_modules/@tauri-apps/cli/schema.json",
   "package": {
     "productName": "memebox",
     "version": "0.1.0"
@@ -31,13 +32,11 @@
       "shortDescription": "",
       "longDescription": "",
       "deb": {
-        "depends": [],
-        "useBootstrapper": false
+        "depends": []
       },
       "macOS": {
         "frameworks": [],
         "minimumSystemVersion": "10.13",
-        "useBootstrapper": false,
         "exceptionDomain": "",
         "signingIdentity": null,
         "entitlements": null
@@ -58,7 +57,13 @@
     "allowlist": {
       "all": false,
       "shell": {
-        "execute": true
+        "sidecar": true,
+        "scope": [
+          {
+          "name": "binaries/server",
+          "sidecar": true
+          }
+        ]
       }
     },
     "windows": [
