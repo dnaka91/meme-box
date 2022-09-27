@@ -1,5 +1,37 @@
 ## 2022.1 to be released
 
+### Feature
+
+* [x] Show Errors in the Dashboard - incl. a way to create a GitHub Issue from that
+* [x] Twitch Auth: Improve custom scopes handling (if any were already configured, these will be always applied)
+* [ ] Tell the Streamer with warnings / dialogs that the Token will expire in X Days
+* [ ] Ability to re-authenticate even when you are not in the normal ports
+
+* [ ] Recipe: more Obs Command Blocks: TBD
+* [ ] if easy/fast todo: Support for new OBS-websocket(.js) v5
+
+## 2022.1-beta2
+
+### Feature
+
+* [x] Recipe "Trigger random action" - now you can select actions based on a Tag
+* [x] Recipe "Trigger random action" - now you can select multiple actions at the same time
+
+### Changes
+
+* [x] Recipe "Trigger random action" - now shows the Actions in a vertical list instead of comma separated 
+* [x] Action Settings: Added a hint why a screen time is needed or can stay empty
+* [x] When the Twitch Token is close to be invalid, show a warning in console
+
+### Quality of Life
+
+* [x] When creating a new action, the dialog will jump already into the Action Settings
+* [x] Added a few Tooltips in the Recipe Dialog
+* [x] Recipe new Command Block full entry is now a button
+* [x] When you authenticate it'll be automatically saved
+
+## 2022.1-beta1
+
 ### Breaking Changes
 
 * [x] The Headless Mode will not open the browser on start anymore, use `--open=true` for that
@@ -54,7 +86,7 @@
 * [x] The Arrange View was redesigned by `@owehmer`
 * [x] "HTML" is now renamed to "Widgets"
 * [x] "Media" is now renamed to "Actions"
-* [ ] Overhaul of the Media Creation Dialog(s)
+* [x] Overhaul of the Media Creation Dialog(s)
 
 
 ## 2021.2.1
