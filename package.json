@@ -1,12 +1,13 @@
 {
   "name": "memebox",
-  "version": "0.0.1",
+  "version": "2022.1.0",
   "description": "A meme-management tool",
   "author": {
     "name": ""
   },
   "keywords": [],
   "main": "out-electron/index.js",
+  "bin": "release/memebox.js",
   "private": true,
   "scripts": {
     "postinstall": "electron-builder install-app-deps && node ./decorate-angular-cli.js && ngcc --properties es2015 browser module main",
@@ -36,10 +37,10 @@
     "build:prepare:folder": "cpy ncc/index.js release --rename=memebox.js && cpy node_modules/vm2/lib/{fixasync,sandbox,contextify}.js release",
     "build:prepare": "npm run build:prod && npm run build:prepare:withoutapp",
     "build:prepare:withoutapp": "npm run build:server && npm run build:prepare:folder",
-    "build:nexe": "npx nexe -i release/memebox.js -r dist -r release/{*.js,!memebox.js} --verbose",
-    "build:windows": "npm run build:nexe -- -t windows-x64 -o release/out/memebox.exe",
-    "build:linux": "npm run build:nexe -- -t linux-x64 -o release/out/memebox-linux",
-    "build:macos": "npm run build:nexe -- -t mac-x64 -o release/out/memebox-macos",
+    "build:pkg": "npx pkg@5.8.0 .",
+    "build:windows": "npm run build:pkg -- -t win-x64 -o release/out/memebox.exe",
+    "build:linux": "npm run build:pkg -- -t linux-x64 -o release/out/memebox-linux",
+    "build:macos": "npm run build:pkg -- -t macos-x64 -o release/out/memebox-macos",
     "build:all": "npm run build:windows && npm run build:linux && npm run build:macos",
     "build:with-electron": "npm run electron:serve-tsc && npm run build",
     "electron:serve-tsc:watch": "ttsc -p tsconfig-electron.json -w -outDir out-electron",
@@ -78,6 +79,7 @@
     "@angular/service-worker": "11.2.14",
     "@babel/core": "7.15.8",
     "@compodoc/compodoc": "1.1.15",
+    "@cypress/schematic": "1.6.0",
     "@datorama/akita-ngdevtools": "5.0.1",
     "@gewd/components": "0.3.3",
     "@nrwl/angular": "11.6.3",
@@ -108,7 +110,7 @@
     "@types/js-yaml": "4.0.5",
     "@types/lodash": "4.14.161",
     "@types/marked": "4.0.2",
-    "@types/node": "12.11.1",
+    "@types/node": "16.11.64",
     "@types/tmi.js": "1.8.1",
     "@types/ws": "8.2.2",
     "@typescript-eslint/eslint-plugin": "5.11.0",
@@ -121,8 +123,8 @@
     "cpy-cli": "3.1.1",
     "cross-env": "7.0.2",
     "cypress": "9.5.0",
-    "electron": "11.5.0",
-    "electron-builder": "22.9.1",
+    "electron": "20.3.0",
+    "electron-builder": "23.3.3",
     "electron-reload": "1.5.0",
     "eslint": "7.32.0",
     "eslint-config-prettier": "8.1.0",
@@ -164,7 +166,6 @@
     "@codemirror/state": "0.19.6",
     "@codemirror/theme-one-dark": "0.19.1",
     "@codemirror/view": "0.19.42",
-    "@cypress/schematic": "1.6.0",
     "@datorama/akita": "5.2.0",
     "@gewd/markdown": "0.4.3",
     "@gewd/mat-utils": "0.1.0",
@@ -198,7 +199,7 @@
     "rxjs": "6.6.3",
     "tmi.js": "1.8.5",
     "tslib": "2.3.1",
-    "ttypescript": "1.5.12",
+    "ttypescript": "1.5.13",
     "vm2": "3.9.3",
     "ws": "8.5.0",
     "xss": "1.0.10",
@@ -207,5 +208,12 @@
   "browser": {
     "fs": false,
     "path": false
+  },
+  "pkg": {
+    "assets": [
+      "dist/**/*",
+      "release/{*.js,!memebox.js}"
+    ],
+    "outputPath": "release/out"
   }
 }

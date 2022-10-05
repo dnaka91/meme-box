@@ -7,7 +7,7 @@
 </p>
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-9-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-11-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 A complete management app for [`image / audio / video / iframe / widgets`](/tutorials/type_overview.md) "media" to be used inside OBS. Or trigger other custom actions.
@@ -16,11 +16,25 @@ A complete management app for [`image / audio / video / iframe / widgets`](/tuto
 |--|--|
 |![memebox example setup gif](./assets/memebox_example_mobile_view.gif)|![memebox example twitch trigger gif](./assets/memebox_example_twitch.gif)|
 
+## Installation
 
-## Download
+### Pre-built binaries
 
 [Download latest release!](https://github.com/negue/meme-box/releases) (currently a bit ouf of date, new release soon) - [latest nightly Builds](https://github.com/negue/meme-box-nightly/releases)
 
+### From source
+
+If you would like to build MemeBox from source, have a look at our dedicated [BUILD.md](BUILD.md).
+
+### From AUR
+
+If you're an Arch Linux user, you can install directly from the [AUR](https://aur.archlinux.org), using one of the [AUR helpers](https://wiki.archlinux.org/title/AUR_helpers).
+
+For example, with `paru`:
+
+```sh
+paru -S memebox
+```
 
 ## Working Features
 
@@ -174,10 +188,10 @@ See finished and upcoming changes in:
 * Find bugs
 * Suggestions to make `things` (UI, Text, Docs etc) more understandable
 * Help fix bugs / improve features
-  * [Good First Issues](https://github.com/negue/meme-box/labels/good%20first%20issue) 
+  * [Good First Issues](https://github.com/negue/meme-box/labels/good%20first%20issue)
   * [Open for Contribution](https://github.com/negue/meme-box/labels/open%20for%20contribution)
   * [Developers Sanity](https://github.com/negue/meme-box/labels/developers%20sanity)
-  * or all other Issue, in case I missed to label them: https://github.com/negue/meme-box/issues 
+  * or all other Issue, in case I missed to label them: https://github.com/negue/meme-box/issues
 * Star it :)
 
 [`Getting started with Development`](README_DEV.md)
@@ -190,19 +204,26 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
 <table>
-  <tr>
-    <td align="center"><a href="http://www.twitch.tv/littleheroesspark"><img src="https://avatars0.githubusercontent.com/u/1301564?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Aaron Rackley</b></sub></a><br /><a href="https://github.com/negue/meme-box/commits?author=ageddesi" title="Code">💻</a></td>
-    <td align="center"><a href="http://twitch.tv/whitep4nth3r"><img src="https://avatars0.githubusercontent.com/u/52798353?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Salma @whitep4nth3r</b></sub></a><br /><a href="https://github.com/negue/meme-box/commits?author=whitep4nth3r" title="Code">💻</a> <a href="#ideas-whitep4nth3r" title="Ideas, Planning, & Feedback">🤔</a> <a href="#design-whitep4nth3r" title="Design">🎨</a></td>
-    <td align="center"><a href="https://twitch.tv/gacbl"><img src="https://avatars0.githubusercontent.com/u/2153382?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Igor Ilic</b></sub></a><br /><a href="https://github.com/negue/meme-box/issues?q=author%3Agigili" title="Bug reports">🐛</a> <a href="#ideas-gigili" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/negue/meme-box/commits?author=gigili" title="Code">💻</a> <a href="https://github.com/negue/meme-box/commits?author=gigili" title="Documentation">📖</a></td>
-    <td align="center"><a href="https://github.com/CrypticEngima"><img src="https://avatars0.githubusercontent.com/u/30286773?v=4?s=100" width="100px;" alt=""/><br /><sub><b>CrypticEngima</b></sub></a><br /><a href="#design-CrypticEngima" title="Design">🎨</a></td>
-    <td align="center"><a href="https://github.com/owehmer"><img src="https://avatars.githubusercontent.com/u/45573843?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Oliver</b></sub></a><br /><a href="https://github.com/negue/meme-box/issues?q=author%3Aowehmer" title="Bug reports">🐛</a> <a href="https://github.com/negue/meme-box/commits?author=owehmer" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/jonathanbucci"><img src="https://avatars.githubusercontent.com/u/29556823?v=4?s=100" width="100px;" alt=""/><br /><sub><b>jonathanbucci</b></sub></a><br /><a href="https://github.com/negue/meme-box/commits?author=jonathanbucci" title="Documentation">📖</a></td>
-    <td align="center"><a href="https://www.linkedin.com/in/divs/"><img src="https://avatars.githubusercontent.com/u/55018955?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Divyanshu Singh</b></sub></a><br /><a href="https://github.com/negue/meme-box/commits?author=divshacker" title="Code">💻</a></td>
-  </tr>
-  <tr>
-    <td align="center"><a href="https://brandonroberts.dev"><img src="https://avatars.githubusercontent.com/u/42211?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Brandon</b></sub></a><br /><a href="https://github.com/negue/meme-box/commits?author=brandonroberts" title="Code">💻</a></td>
-    <td align="center"><a href="https://www.linkedin.com/in/chirag-mahawar/"><img src="https://avatars.githubusercontent.com/u/34866279?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Chirag Mahawar</b></sub></a><br /><a href="https://github.com/negue/meme-box/commits?author=chiragmahawar7" title="Code">💻</a></td>
-  </tr>
+  <tbody>
+    <tr>
+      <td align="center"><a href="http://www.twitch.tv/littleheroesspark"><img src="https://avatars0.githubusercontent.com/u/1301564?v=4?s=100" width="100px;" alt="Aaron Rackley"/><br /><sub><b>Aaron Rackley</b></sub></a><br /><a href="https://github.com/negue/meme-box/commits?author=ageddesi" title="Code">💻</a></td>
+      <td align="center"><a href="http://twitch.tv/whitep4nth3r"><img src="https://avatars0.githubusercontent.com/u/52798353?v=4?s=100" width="100px;" alt="Salma @whitep4nth3r"/><br /><sub><b>Salma @whitep4nth3r</b></sub></a><br /><a href="https://github.com/negue/meme-box/commits?author=whitep4nth3r" title="Code">💻</a> <a href="#ideas-whitep4nth3r" title="Ideas, Planning, & Feedback">🤔</a> <a href="#design-whitep4nth3r" title="Design">🎨</a></td>
+      <td align="center"><a href="https://twitch.tv/gacbl"><img src="https://avatars0.githubusercontent.com/u/2153382?v=4?s=100" width="100px;" alt="Igor Ilic"/><br /><sub><b>Igor Ilic</b></sub></a><br /><a href="https://github.com/negue/meme-box/issues?q=author%3Agigili" title="Bug reports">🐛</a> <a href="#ideas-gigili" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/negue/meme-box/commits?author=gigili" title="Code">💻</a> <a href="https://github.com/negue/meme-box/commits?author=gigili" title="Documentation">📖</a></td>
+      <td align="center"><a href="https://github.com/CrypticEngima"><img src="https://avatars0.githubusercontent.com/u/30286773?v=4?s=100" width="100px;" alt="CrypticEngima"/><br /><sub><b>CrypticEngima</b></sub></a><br /><a href="#design-CrypticEngima" title="Design">🎨</a></td>
+      <td align="center"><a href="https://github.com/owehmer"><img src="https://avatars.githubusercontent.com/u/45573843?v=4?s=100" width="100px;" alt="Oliver"/><br /><sub><b>Oliver</b></sub></a><br /><a href="https://github.com/negue/meme-box/issues?q=author%3Aowehmer" title="Bug reports">🐛</a> <a href="https://github.com/negue/meme-box/commits?author=owehmer" title="Code">💻</a></td>
+      <td align="center"><a href="https://github.com/jonathanbucci"><img src="https://avatars.githubusercontent.com/u/29556823?v=4?s=100" width="100px;" alt="jonathanbucci"/><br /><sub><b>jonathanbucci</b></sub></a><br /><a href="https://github.com/negue/meme-box/commits?author=jonathanbucci" title="Documentation">📖</a></td>
+      <td align="center"><a href="https://www.linkedin.com/in/divs/"><img src="https://avatars.githubusercontent.com/u/55018955?v=4?s=100" width="100px;" alt="Divyanshu Singh"/><br /><sub><b>Divyanshu Singh</b></sub></a><br /><a href="https://github.com/negue/meme-box/commits?author=divshacker" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center"><a href="https://brandonroberts.dev"><img src="https://avatars.githubusercontent.com/u/42211?v=4?s=100" width="100px;" alt="Brandon"/><br /><sub><b>Brandon</b></sub></a><br /><a href="https://github.com/negue/meme-box/commits?author=brandonroberts" title="Code">💻</a></td>
+      <td align="center"><a href="https://www.linkedin.com/in/chirag-mahawar/"><img src="https://avatars.githubusercontent.com/u/34866279?v=4?s=100" width="100px;" alt="Chirag Mahawar"/><br /><sub><b>Chirag Mahawar</b></sub></a><br /><a href="https://github.com/negue/meme-box/commits?author=chiragmahawar7" title="Code">💻</a></td>
+      <td align="center"><a href="https://varunkhalate.me/"><img src="https://avatars.githubusercontent.com/u/68511458?v=4?s=100" width="100px;" alt="Varun Khalate"/><br /><sub><b>Varun Khalate</b></sub></a><br /><a href="https://github.com/negue/meme-box/commits?author=khalatevarun" title="Code">💻</a></td>
+      <td align="center"><a href="https://home.dnaka91.rocks"><img src="https://avatars.githubusercontent.com/u/36804488?v=4?s=100" width="100px;" alt="Dominik Nakamura"/><br /><sub><b>Dominik Nakamura</b></sub></a><br /><a href="https://github.com/negue/meme-box/commits?author=dnaka91" title="Code">💻</a> <a href="https://github.com/negue/meme-box/commits?author=dnaka91" title="Documentation">📖</a> <a href="#platform-dnaka91" title="Packaging/porting to new platform">📦</a></td>
+    </tr>
+  </tbody>
+  <tfoot>
+    
+  </tfoot>
 </table>
 
 <!-- markdownlint-restore -->
